@@ -1,68 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_foreground_task/flutter_foreground_task.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 import 'ffi.dart';
+import 'download_manager_base.dart';
 
-enum DownloadStatus { queued, downloading, decrypting, done, error, cancelled }
+export 'download_manager_base.dart';
 
-class DownloadEntry {
-  final String titleId;
-  final String name;
-  final String outputPath;
-  final int category;
-  final bool decrypt;
-  DownloadStatus status;
-  int totalSize;
-  int downloaded;
-  double decryptionProgress;
-  String currentFile;
-  String? error;
-  DownloadTask? task;
-  double speed; // bytes per second
-  DateTime? _lastSpeedUpdate;
-  int _lastSpeedBytes;
-
-  String get typeName => categoryName(category);
-
-  DownloadEntry({
-    required this.titleId,
-    required this.name,
-    required this.outputPath,
-    required this.category,
-    this.decrypt = true,
-    this.status = DownloadStatus.queued,
-    this.totalSize = 0,
-    this.downloaded = 0,
-    this.decryptionProgress = 0,
-    this.currentFile = '',
-    this.error,
-    this.speed = 0,
-  }) : _lastSpeedBytes = 0;
-
-  void updateSpeed(int currentDownloaded) {
-    final now = DateTime.now();
-    if (_lastSpeedUpdate == null) {
-      _lastSpeedUpdate = now;
-      _lastSpeedBytes = currentDownloaded;
-      return;
-    }
-    final elapsed = now.difference(_lastSpeedUpdate!).inMilliseconds;
-    if (elapsed >= 1000) {
-      final delta = currentDownloaded - _lastSpeedBytes;
-      speed = delta / (elapsed / 1000.0);
-      _lastSpeedUpdate = now;
-      _lastSpeedBytes = currentDownloaded;
-    }
-  }
-}
-
-class DownloadManager extends ChangeNotifier {
+class DownloadManager extends BaseDownloadManager {
   static final DownloadManager instance = DownloadManager._();
   DownloadManager._();
 
+  @override
   final List<DownloadEntry> entries = [];
   final FlutterLocalNotificationsPlugin _notifications =
       FlutterLocalNotificationsPlugin();
@@ -70,6 +20,7 @@ class DownloadManager extends ChangeNotifier {
   bool _foregroundStarted = false;
   DateTime? _lastProgressUpdate;
 
+  @override
   Future<void> init() async {
     await _notifications.initialize(
       settings: const InitializationSettings(
@@ -213,6 +164,7 @@ class DownloadManager extends ChangeNotifier {
         e.status == DownloadStatus.queued);
   }
 
+  @override
   Future<void> startDownload(
       String titleId, String name, String outputPath, int category, {bool decrypt = true}) async {
     await _ensureNotificationPermission();
@@ -305,6 +257,7 @@ class DownloadManager extends ChangeNotifier {
     _updateNotification(entry);
   }
 
+  @override
   void cancelDownload(DownloadEntry entry) {
     entry.task?.cancel();
     entry.status = DownloadStatus.cancelled;
@@ -315,6 +268,7 @@ class DownloadManager extends ChangeNotifier {
     }
   }
 
+  @override
   void removeEntry(DownloadEntry entry) {
     if (entry.status == DownloadStatus.downloading ||
         entry.status == DownloadStatus.decrypting) {

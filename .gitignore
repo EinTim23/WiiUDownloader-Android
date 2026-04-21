@@ -46,3 +46,7 @@ app.*.map.json
 
 WiiUDownloader/db.go
 WiiUDownloader/dummydb.go
+wiiudownloader.ipa
+libwiiudownloader.h
+libwiiudownloader.a
+libwiiudownloader.so

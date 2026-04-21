@@ -6,11 +6,18 @@ import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'ffi.dart';
 import 'download_manager.dart';
+import 'download_manager_ios.dart';
+import 'download_manager_base.dart';
+import 'ios_bookmark.dart';
+
+BaseDownloadManager get downloadManager => Platform.isIOS
+    ? DownloadManagerIOS.instance
+    : DownloadManager.instance;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setTempDir(Directory.systemTemp.path);
-  await DownloadManager.instance.init();
+  await downloadManager.init();
   runApp(const MainApp());
 }
 
@@ -251,7 +258,7 @@ class _SearchTabState extends State<SearchTab> {
     final titleHex =
         entry.titleId.toRadixString(16).toUpperCase().padLeft(16, '0');
     final decrypt = prefs.getBool('decrypt_on_download') ?? true;
-    DownloadManager.instance.startDownload(titleHex, entry.name, dir, entry.category, decrypt: decrypt);
+    downloadManager.startDownload(titleHex, entry.name, dir, entry.category, decrypt: decrypt);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Started download: ${entry.name}')),
@@ -267,7 +274,7 @@ class DownloadsTab extends StatefulWidget {
 }
 
 class _DownloadsTabState extends State<DownloadsTab> {
-  final _manager = DownloadManager.instance;
+  final _manager = downloadManager;
 
   @override
   void initState() {
@@ -426,6 +433,10 @@ class _SettingsTabState extends State<SettingsTab> {
   }
 
   Future<bool> _ensureStoragePermission() async {
+    if(Platform.isIOS) {
+      return true;
+    }
+    
     PermissionStatus status = await Permission.manageExternalStorage.status;
     if (status.isGranted) return true;
 
@@ -460,6 +471,11 @@ class _SettingsTabState extends State<SettingsTab> {
   }
 
   Future<void> _pickDirectory() async {
+    if (Platform.isIOS) {
+      await _pickDirectoryIOS();
+      return;
+    }
+
     final hasPermission = await _ensureStoragePermission();
     if (!hasPermission) return;
 
@@ -471,6 +487,15 @@ class _SettingsTabState extends State<SettingsTab> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_prefKey, result);
     setState(() => _downloadDir = result);
+  }
+
+  Future<void> _pickDirectoryIOS() async {
+    final path = await IOSBookmark.pickAndBookmarkFolder();
+    if (path == null) return;
+
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_prefKey, path);
+    setState(() => _downloadDir = path);
   }
 
   @override

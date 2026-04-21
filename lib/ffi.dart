@@ -1,5 +1,6 @@
 import 'dart:ffi';
 import 'package:ffi/ffi.dart';
+import 'dart:io';
 
 final class TitleEntry extends Struct {
   external Pointer<Utf8> name;
@@ -69,7 +70,15 @@ typedef _DownloadTitleDart = void Function(
 );
 
 
-final DynamicLibrary wiiudownloader = DynamicLibrary.open("libwiiudownloader.so");
+final DynamicLibrary wiiudownloader = () {
+  if (Platform.isAndroid) {
+    return DynamicLibrary.open("libwiiudownloader.so");
+  } else if (Platform.isIOS) {
+    return DynamicLibrary.process(); 
+  } else {
+    throw UnsupportedError("Unsupported platform");
+  }
+}();
 
 final search = wiiudownloader
     .lookup<NativeFunction<search_native>>('Search')
@@ -92,7 +101,6 @@ void setTempDir(String dir) {
   _setTempDir(ptr);
   calloc.free(ptr);
 }
-
 
 class TitleEntryData {
   final String name;
