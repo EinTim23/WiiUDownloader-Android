@@ -50,3 +50,5 @@ wiiudownloader.ipa
 libwiiudownloader.h
 libwiiudownloader.a
 libwiiudownloader.so
+
+android/build/reports/problems/problems-report.html
