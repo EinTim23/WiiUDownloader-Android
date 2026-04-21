@@ -1,6 +1,6 @@
-# Wii U Downloader Android
+# Wii U Downloader Mobile
 
-Port of [WiiUDownloader](https://github.com/Xpl0itU/WiiUDownloader.git) to Android using flutter.
+Port of [WiiUDownloader](https://github.com/Xpl0itU/WiiUDownloader.git) to Android/iOS using flutter.
 
 ### Features:
 - Download Wii U titles from official Nintendo servers and decrypt them optionally
