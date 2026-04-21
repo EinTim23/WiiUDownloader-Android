@@ -54,13 +54,13 @@ jobs:
     - name: Upload Android APK
       uses: actions/upload-artifact@v4
       with:
-        name: "Wii U Downloader Android"
+        name: "WiiUDownloader Android"
         path: build/app/outputs/flutter-apk/app-release.apk
 
     - name: Upload iOS ipa
       uses: actions/upload-artifact@v4
       with:
-        name: "Wii U Downloader iOS"
+        name: "WiiUDownloader iOS"
         path: wiiudownloader.ipa
 
   create-release:

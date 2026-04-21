@@ -77,6 +77,10 @@ func normalizeFilename(filename string) string {
 	return result
 }
 
+func WiiUDownloaderInit() {
+	wiiudownloader.SetTitleDatabase(titleEntry)
+}
+
 //export SetTempDir
 func SetTempDir(dir *C.char) {
 	os.Setenv("TMPDIR", C.GoString(dir))
@@ -84,6 +88,11 @@ func SetTempDir(dir *C.char) {
 
 //export Search
 func Search(query *C.char, category C.uint8_t, region C.uint8_t) C.TitleEntryArray {
+	// Initialize database if not already initialized
+	if len(wiiudownloader.TitleDatabase) == 0 {
+		WiiUDownloaderInit()
+	}
+
 	if category > 5 {
 		return C.TitleEntryArray{data: nil, length: 0}
 	}

@@ -68,7 +68,7 @@ class DownloadManager extends BaseDownloadManager {
       ),
     );
     await FlutterForegroundTask.startService(
-      notificationTitle: 'Wii U Downloader',
+      notificationTitle: 'WiiUDownloader',
       notificationText: 'Downloads in progress',
       notificationIcon: const NotificationIcon(
         metaDataName: 'dev.eintim.wiiudownloader.NOTIFICATION_ICON',

@@ -44,8 +44,7 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
-WiiUDownloader/db.go
-WiiUDownloader/dummydb.go
+native_lib/db.go
 wiiudownloader.ipa
 libwiiudownloader.h
 libwiiudownloader.a

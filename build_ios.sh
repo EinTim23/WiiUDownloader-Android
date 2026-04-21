@@ -1,16 +1,12 @@
 #!/bin/bash
 set -e
 
-cd WiiUDownloader
-
-python3 grabTitles.py
-
-cd ..
-
 export SDK=$(xcrun --sdk iphoneos --show-sdk-path)
 export CC=$(xcrun --sdk iphoneos --find clang)
 
 cd native_lib
+
+python3 grabTitles.py
 
 GOOS=ios \
 GOARCH=arm64 \
