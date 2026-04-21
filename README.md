@@ -4,7 +4,7 @@ Port of [WiiUDownloader](https://github.com/Xpl0itU/WiiUDownloader.git) to Andro
 
 ### Features:
 - Download Wii U titles from official Nintendo servers and decrypt them optionally
-- Download in the background
+- Download in the background (Android only, due to strict background restrictions on iOS)
 - Option to keep the screen alive while downloading so the device cannot go into sleep mode and interrupt the download
 
 ### Screenshots:
